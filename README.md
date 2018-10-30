@@ -234,4 +234,4 @@ It has 2 dependancies (which are included in the `composer.json` file.
 		"evo/exception" : "dev-master"
 	}
     
-    
+And that is pretty much it, Enjoy!
