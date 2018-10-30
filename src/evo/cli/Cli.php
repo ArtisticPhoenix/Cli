@@ -145,7 +145,7 @@ final class Cli implements SingletonInterface
         ];
         
         $this->options['requireValue'] = [
-            'doc'       => 'Option must be a boolean value, a value is requred for this argument',
+            'doc'       => 'Option must be a boolean value, a value is required for this argument',
             'accept'    => function($value){
                 return is_bool($value);
              }
@@ -332,7 +332,10 @@ final class Cli implements SingletonInterface
             
             if(!isset($argNames[$arg]) && false === ($arg = array_search($arg, $argNames))) continue;  
 
-            if(isset($this->arguments[$arg]['options']['accept']) && !$this->arguments[$arg]['options']['accept']->__invoke($arg,$value)) continue;
+            if(isset($this->arguments[$arg]['options']['accept']) && !$this->arguments[$arg]['options']['accept']->__invoke($arg,$value)){
+                if(isset($this->arguments[$arg]['options']['requireValue'])) throw new InvalidArgument("A value is required for argument '{$realname}'. ".$this->arguments[$arg]['doc']);
+                continue;
+            }
             
             if(isset($this->arguments[$arg]['options']['requireValue']) && !strlen($value)) throw new InvalidArgument("A value is required for argument '{$realname}'. ".$this->arguments[$arg]['doc']);
 
@@ -354,11 +357,12 @@ final class Cli implements SingletonInterface
                 $shortOpts = [];
                 $longOpts = [];
                 
-                foreach ($this->arguments as $arg=>$settings){
-                    $t=isset($settings['options']['accept'])?empty($settings['options']['required'])?'::':':':'';      
+                foreach ($this->arguments as $arg=>$settings){     
+                    $t= isset($settings['options']['accept']) || isset($settings['options']['requireValue']) ? '::':'';      
                     $shortOpts[] = $settings['shortName'].$t;
                     $longOpts[] = $settings['longName'].$t; 
                 }
+                
                 $request = getopt(implode($shortOpts), $longOpts);
             }else {
                 switch (strtoupper($_SERVER['REQUEST_METHOD'])) {
