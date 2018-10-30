@@ -87,8 +87,7 @@ final class Cli implements SingletonInterface
      * @var array
      */
     protected $options = [];
-    
-    
+ 
     /**
      * storage for the REQUEST_* flags
      * @var integer
@@ -278,9 +277,11 @@ final class Cli implements SingletonInterface
     }
  
     /**
+     * Get a single argumen, or get all arguments when which is null
      *
-     * @param string $which
+     * @param string $which - leave null to get all arguments
      * @param mixed $default
+     * @return mixed
      */
     public function getArguments($which=null, $default=null)
     {
@@ -298,7 +299,9 @@ final class Cli implements SingletonInterface
     }
     
     /**
-     *
+     * Get the help document as a string
+     * 
+     * @return string
      */
     public function getHelpDoc()
     {
@@ -313,8 +316,9 @@ final class Cli implements SingletonInterface
     }
     
     /**
+     * Output the help doc
      *
-     * @param string $exit
+     * @param bool $exit
      */
     public function printHelpDoc($exit=true)
     {
@@ -336,6 +340,7 @@ final class Cli implements SingletonInterface
     }
    
     /**
+     * normalize the request arguments, and filter for accepeted and required arguments
      *
      * @param array $request
      * @throws InvalidArgument
@@ -377,7 +382,9 @@ final class Cli implements SingletonInterface
     }
     
     /**
-     *
+     * Fetch the request based on the current Request type and allowed request type
+     * 
+     * @return array
      */
     protected function fetchRequest()
     {
