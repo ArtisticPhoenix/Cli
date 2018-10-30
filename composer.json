@@ -11,8 +11,7 @@
 	},
 	"require" : {
 		"evo/patterns" : "~1.0",
-		"evo/exception" : "dev-master",
-		"evo/debug" : "~1.0"
+		"evo/exception" : "dev-master"
 	},
 	"keywords" : [
 		"CLI"

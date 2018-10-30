@@ -7,7 +7,7 @@ use evo\exception\InvalidArgument;
 
 /**
  *
- * (c) 2016 Hugh Durham III
+ * (c) 2018 Hugh Durham III
  *
  * For license information please view the LICENSE file included with this source code.
  *
@@ -41,35 +41,39 @@ final class Cli implements SingletonInterface
     const REQUEST_GET       = 4;
     
     /**
+     * @todo
      * bitwise flag for what request type to accept
      * @var integer
      */
-    const REQUEST_PUT       = 8;
+    /*const REQUEST_PUT       = 8;*/
     
     /**
+     * @todo
      * bitwise flag for what request type to accept
      * @var integer
      */
-    const REQUEST_DELETE   = 16;
+   /* const REQUEST_DELETE   = 16;*/
     
     /**
+     * @todo
      * bitwise flag for what request type to accept
      * @var integer
      */
-    const REQUEST_PATCH    = 32;
+   /* const REQUEST_PATCH    = 32;*/
     
     /**
-     *
+     * Request types
      *
      * @var int
      */
     const R_ALL =
         self::REQUEST_CLI |
         self::REQUEST_POST |
-        self::REQUEST_GET |
-        self::REQUEST_PUT |
+        self::REQUEST_GET; 
+        /*|
+        /*self::REQUEST_PUT |
         self::REQUEST_DELETE |
-        self::REQUEST_PATCH;
+        self::REQUEST_PATCH;*/
     
     /**
      * storage for the arguments
@@ -77,8 +81,8 @@ final class Cli implements SingletonInterface
      */
     protected $arguments = [];
     
-    
     /**
+     * storage for the options (internal only)
      * 
      * @var array
      */
@@ -115,31 +119,37 @@ final class Cli implements SingletonInterface
                 case 'POST':
                     $this->currentRequestType = self::REQUEST_POST;
                 break;
+                /*
+                case 'PUT':
+                    $this->currentRequestType = self::REQUEST_PUT;
+                break;
+                case 'DELETE':
+                    $this->currentRequestType = self::REQUEST_DELETE;
+                break;
+                case 'PATCH':
+                    $this->currentRequestType = self::REQUEST_PATCH;
+                break;
+                 */
                 default:
                     $this->currentRequestType = self::REQUEST_GET;
             }
         }
-        
-        
+
         //================ OPTIONS
         $this->options['accept'] = [
-            'doc'       => '[bool|string(regex)|closure] must return true to accept a given value for argument',
+            'doc'       => 'Option must be a Closure, which must return true to accept a given value for argument',
             'accept'    => function($value){
-                if(is_bool($value)) return 'Bool';
-                if(is_a($value, \Closure::class)) return 'Closure';
-                if(is_string($value)) return 'Pattern';
-                
+                if(is_a($value, \Closure::class)) return true;
                 return false;
              }
         ];
         
-        $this->options['required'] = [
-            'doc'       => '[bool] is a value required, to accept a value the accept option must be set',
+        $this->options['requireValue'] = [
+            'doc'       => 'Option must be a boolean value, a value is requred for this argument',
             'accept'    => function($value){
                 return is_bool($value);
              }
         ];
-        
     }
     
     /**
@@ -148,9 +158,7 @@ final class Cli implements SingletonInterface
      * @return array
      */
     public function getOptions(){
-        $opts = array_combine(array_keys($this->options),array_column($this->options, 'doc'));
-
-        debug_dump($opts);
+       return array_combine(array_keys($this->options), array_column($this->options, 'doc'));
     }
     
     /**
@@ -158,6 +166,7 @@ final class Cli implements SingletonInterface
      * 
      * @param string $key
      * @param mixed $value
+     * @return array
      * @throws InvalidArgument
      */
     protected function ckOption($key, $value){
@@ -174,11 +183,13 @@ final class Cli implements SingletonInterface
      * Auto detection of the request type is suggested,
      * but this method is provided if you need it
      *
-     * @param int $type
+     * @param int $requestType
+     * @return self
      */
     public function setCurrentRequestType($requestType)
     {
         $this->currentRequestType = $requestType;
+        return $this;
     }
     
     /**
@@ -186,11 +197,13 @@ final class Cli implements SingletonInterface
      * 
      * One of the Reqest_* constants, or R_ALL for all types
      *
-     * @param int $flags
+     * @param int $requestType
+     * @return self
      */
-    public function setAllowedRequestTypes($request_type)
+    public function setAllowedRequestTypes($requestType)
     {
-        $this->allowedRequestTypes = $request_type;
+        $this->allowedRequestTypes = $requestType;
+        return $this;
     }
     
     /**
@@ -198,38 +211,60 @@ final class Cli implements SingletonInterface
      * @param string $shortName - the short name of the argument (len 1)
      * @param string|null $longName - long name of the argument (len > 1) this is linked to the short name and vis-virsa
      * @param string $doc - help documentation
-     * @param array $options = ['required'=>true, accept=>function($k,$v){ return true;}]
+     * @param array $options = ['requireValue'=>true, accept=>function($k,$v){ return true;}, 'required' => true]
+     * @return self
      * @throws InvalidArgument
      */
     public function setArgument($shortName, $longName=null, $doc='', array $options=[])
     {
+
+        if(!preg_match('/^[a-z0-9]$/i', $shortName)) throw new InvalidArgument("Invalid shortName '{$shortName}', can only be 1 lenght and only 'a-z','A-Z' and '0-9' are accepted.");  
         
-        
-        if(!preg_match('/^[a-z0-9]$/i', $shortName)) throw new InvalidArgument("Invalid shortName, can only be 1 lenght and only 'a-z','A-Z' and '0-9' are accepted.");  
-        
-        if($longName) $longName = ltrim($longName,'-');
-        
+        if($longName && !preg_match('/^[a-z0-9]{2,}/i', $longName)) throw new InvalidArgument("Invalid longName '{$longName}', must be 2 or more lenght and only 'a-z','A-Z' and '0-9' are accepted.");
+
         $this->arguments[$shortName] = [
-            'shortName' => $shortName,
-            'longName'  => $longName,
-            'doc'       => $doc,
-            'options'   => []
+            'shortName'         => $shortName,
+            'longName'          => $longName,
+            'longNameLength'    => strlen($longName), //important for helpdoc spacing
+            'doc'               => $doc,
+            'options'           => []
         ];
 
         if(!empty($options)){
             foreach ($options as $key=>$value){  
                 $this->arguments[$shortName]['options'][$key] = $this->ckOption($key, $value);
             }
-        } 
+        }
+        return $this;
     }
     
-    
-    public function loadConfig(array $conf)
+    /**
+     * 
+     * @param array $conf
+     * @return self
+     * @example <pre>
+     * [
+     *     [
+     *        'shortName' => 'h'
+     *        'longName'  => 'help'
+     *         'doc'      => 'Show this help text'
+     *         'options'  => []
+     *     ],
+     *     [...]
+     * ]
+     */
+    public function fromConfig(array $conf)
     {
+        foreach ($conf as $argument)
+            $this->setArgument(
+                $argument['shortName'],
+                isset($conf['longName'])?$conf['longName']:null,
+                isset($conf['doc'])?$conf['doc']:'',
+                isset($conf['options'])?$conf['options']:''
+           );
+        return $this;
     }
-    
-    
-    
+ 
     /**
      *
      * @param string $which
@@ -237,12 +272,13 @@ final class Cli implements SingletonInterface
      */
     public function getArguments($which=null, $default=null)
     {
-        debug_dump($this->arguments);
-        
         if(!$this->request) $this->setRequest($this->fetchRequest());
         
-       
-  
+        if(empty($which)) return $this->request;
+        
+        if(strlen($which) > 1 && $which = @array_column($this->arguments, 'shortName', 'longName')[$which]);
+      
+        return isset($this->request[$which]) ? $this->request[$which] : $default;
     }
     
     /**
@@ -250,18 +286,61 @@ final class Cli implements SingletonInterface
      */
     public function getHelpDoc()
     {
-        //php <file> [args...]
-        //$head = '-t <docroot>     Specify document root <docroot> for built-in web server.';
+        $maxLen = max(array_column($this->arguments, 'longNameLength'))+8; // + ', --' + name +'    '
+        $doc = "Usage: php <file> [--] [args...]\n";
+        foreach ($this->arguments as $settings){
+            $longName = empty($settings['longName']) ? str_repeat(" ", $maxLen) : str_pad(', --'.$settings['longName'],$maxLen, " ");
+            
+            $doc .= "    -{$settings['shortName']}{$longName} {$settings['doc']}\n";
+        }
+        return $doc;
+    }
+    
+    /**
+     * 
+     * @param string $exit
+     */
+    public function printHelpDoc($exit=true){
+        echo $this->getHelpDoc();
+        if($exit) exit();
     }
     
     /**
      *
      * @param array $request
+     * @return self
      */
     public function setRequest(array $request)
     {
-        debug_dump($request);
-        $this->request = $request;
+        $this->request = $this->normalizeRequest($request);
+        return $this;
+    }
+   
+    /**
+     * 
+     * @param array $request
+     * @throws InvalidArgument
+     * @return array
+     */
+    protected function normalizeRequest(array $request){
+        $argNames = array_column($this->arguments, 'longName', 'shortName');      
+        $validArgs = [];
+        foreach ($request as $arg => $value){
+            $realname = $arg;
+            
+            if(!strlen($arg)) continue;
+            
+            if(!isset($argNames[$arg]) && false === ($arg = array_search($arg, $argNames))) continue;  
+
+            if(isset($this->arguments[$arg]['options']['accept']) && !$this->arguments[$arg]['options']['accept']->__invoke($arg,$value)) continue;
+            
+            if(isset($this->arguments[$arg]['options']['requireValue']) && !strlen($value)) throw new InvalidArgument("A value is required for argument '{$realname}'. ".$this->arguments[$arg]['doc']);
+
+            if(!strlen($value)) $value = true;
+            
+            $validArgs[$arg] = $value;
+        }
+        return $validArgs;   
     }
     
     /**
@@ -272,21 +351,14 @@ final class Cli implements SingletonInterface
         $request = [];
         if($this->currentRequestType & $this->allowedRequestTypes){
             if ($this->currentRequestType == self::REQUEST_CLI) {
-                
                 $shortOpts = [];
                 $longOpts = [];
                 
-                foreach ($this->arguments as $arg=>$data){
-                    debug_dump($data);
-                    
-                    $t=isset($data['options']['accept'])?empty($data['options']['required'])?'::':':':'';
-                    
-                    $shortOpts[] = $data['shortName'].$t;
-                    $longOpts[] = $data['longName'].$t; 
+                foreach ($this->arguments as $arg=>$settings){
+                    $t=isset($settings['options']['accept'])?empty($settings['options']['required'])?'::':':':'';      
+                    $shortOpts[] = $settings['shortName'].$t;
+                    $longOpts[] = $settings['longName'].$t; 
                 }
-                
-                debug_dump(implode($shortOpts));
-                
                 $request = getopt(implode($shortOpts), $longOpts);
             }else {
                 switch (strtoupper($_SERVER['REQUEST_METHOD'])) {
