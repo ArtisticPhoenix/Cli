@@ -258,3 +258,4 @@ It has 2 dependancies (which are included in the `composer.json` file.
 
     
 And that is pretty much it, Enjoy!
+
