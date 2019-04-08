@@ -29,6 +29,8 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function setAllowedRequestTypes($requestType) : self;	
 	//set the current request types (for overriding auto detection)
 	public function setCurrentRequestType($requestType) : self;	
+	//get the current request type (as of version 1.0.2)
+	public function getCurrentRequestType() : int;
 	//set a request (for overriding)
 	public function setRequest(array $request) : self;
 	//get a list of the allowed options (see options)
@@ -38,6 +40,16 @@ This is the form of a typical command line call, here we are assuming only that 
 	//output the argement help doc
 	public function printHelpDoc($exit=true) : null;
 ```
+
+### Cli Class Constants ###
+ Name              |   Type    |   Value     | Description
+ ----------------- | --------- | ----------- | ------------------------------------------------------
+ R_ALL             |    int    |     7      | __Bitwise Flag__ Value subject to change (composite of all other flags)
+ REQUEST_CLI       |    int    |     1      |  __Bitwise Flag__ Command line request 
+ REQUEST_POST      |    int    |     2      |  __Bitwise Flag__ HTTP Post request
+ REQUEST_GET       |    int    |     4      |  __Bitwise Flag__ HTTP Get request
+ 
+
 ### Arguments ###
  Name              |   Type   |   Required  | Description
  ----------------- | -------- | ----------- | ------------------------------------------------------
@@ -233,5 +245,14 @@ It has 2 dependancies (which are included in the `composer.json` file.
         "evo/patterns" : "~1.0",
 		"evo/exception" : "dev-master"
 	}
+	
+**Changelog**
+
+1.0.0 - initial commits
+
+1.0.1 - minor bug fix for required args
+
+1.0.2 - added method `getCurrentRequestType()`
+
     
 And that is pretty much it, Enjoy!
