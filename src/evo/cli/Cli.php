@@ -270,7 +270,7 @@ final class Cli implements SingletonInterface
                 $argument['shortName'],
                 isset($conf['longName'])?$conf['longName']:null,
                 isset($conf['doc'])?$conf['doc']:'',
-                isset($conf['options'])?$conf['options']:''
+                isset($conf['options'])?$conf['options']:[]
            );
         }
         return $this;
