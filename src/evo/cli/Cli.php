@@ -272,9 +272,9 @@ final class Cli implements SingletonInterface
                 isset($argument['doc'])?$argument['doc']:'',
                 isset($argument['options'])?$argument['options']:[]
              );
+
         }
         return $this;
-        
     }
  
     /**
