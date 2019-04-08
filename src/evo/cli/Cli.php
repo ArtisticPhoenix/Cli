@@ -268,10 +268,10 @@ final class Cli implements SingletonInterface
         foreach ($conf as $argument) {
             $this->setArgument(
                 $argument['shortName'],
-                isset($conf['longName'])?$conf['longName']:null,
-                isset($conf['doc'])?$conf['doc']:'',
-                isset($conf['options'])?$conf['options']:[]
-           );
+                isset($argument['longName'])?$argument['longName']:null,
+                isset($argument['doc'])?$argument['doc']:'',
+                isset($argument['options'])?$argument['options']:[]
+             );
         }
         return $this;
     }
