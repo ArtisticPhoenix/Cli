@@ -16,5 +16,9 @@
 	},
 	"keywords" : [
 		"CLI"
+	],
+	"authors" : [{
+			"name" : "Artisticphoenix"
+		}
 	]
 }
