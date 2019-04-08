@@ -200,7 +200,7 @@ final class Cli implements SingletonInterface
     }
     
     /**
-     * 
+     *
      * @return number - one of the self::REQUEST_* constants
      */
     public function getCurrentRequestType()
@@ -282,7 +282,6 @@ final class Cli implements SingletonInterface
                 isset($argument['doc'])?$argument['doc']:'',
                 isset($argument['options'])?$argument['options']:[]
              );
-
         }
         return $this;
     }
@@ -311,7 +310,7 @@ final class Cli implements SingletonInterface
     
     /**
      * Get the help document as a string
-     * 
+     *
      * @return string
      */
     public function getHelpDoc()
@@ -394,7 +393,7 @@ final class Cli implements SingletonInterface
     
     /**
      * Fetch the request based on the current Request type and allowed request type
-     * 
+     *
      * @return array
      */
     protected function fetchRequest()
