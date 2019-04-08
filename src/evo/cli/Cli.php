@@ -200,6 +200,15 @@ final class Cli implements SingletonInterface
     }
     
     /**
+     * 
+     * @return number - one of the self::REQUEST_* constants
+     */
+    public function getCurrentRequestType()
+    {
+        return $this->allowedRequestTypes;
+    }
+    
+    /**
      * Set which types of requests are allowed
      *
      * One of the Reqest_* constants, or R_ALL for all types
@@ -212,6 +221,7 @@ final class Cli implements SingletonInterface
         $this->allowedRequestTypes = $requestType;
         return $this;
     }
+    
     
     /**
      *
