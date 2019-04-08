@@ -274,6 +274,7 @@ final class Cli implements SingletonInterface
              );
         }
         return $this;
+        
     }
  
     /**
