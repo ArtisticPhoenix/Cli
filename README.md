@@ -253,10 +253,8 @@ It has 2 dependancies (which are included in the `composer.json` file.
 1.0.1 - minor bug fix - for required args (were not acutally requiring)
 
 1.0.2 - added method `getCurrentRequestType()`
-
-1.0.3 - minor bug fix - When passing a config array to fromConfig() that does not have any options an empty string was sent to the 4th argument (options) of `setArgument($shortName, $longName=null, $doc='', array $options=[])`
-
-1.0.4 - minor bug fix - not properly regestering some config settings
+  - minor bug fix - When passing a config array to fromConfig() that does not have any options an empty string was sent to the 4th argument (options) of `setArgument($shortName, $longName=null, $doc='', array $options=[])`
+  - minor bug fix - not properly regestering some config settings
 
     
 And that is pretty much it, Enjoy!
