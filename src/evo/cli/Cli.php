@@ -205,7 +205,7 @@ final class Cli implements SingletonInterface
      */
     public function getCurrentRequestType()
     {
-        return $this->allowedRequestTypes;
+        return $this->currentRequestType;
     }
     
     /**
