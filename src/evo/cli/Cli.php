@@ -452,5 +452,6 @@ final class Cli implements SingletonInterface
             // recommended to prevent caching of even
             header('Cache-Control: no-cache');
         }
+
     }
 }
