@@ -429,28 +429,27 @@ final class Cli implements SingletonInterface
      */
     protected function streamOutput()
     {
-        // Turn off output buffering
-        ini_set('output_buffering', 'off');
-        // Turn off PHP output compression
-        ini_set('zlib.output_compression', false);
-        
-        //Flush (send) the output buffer and turn off output buffering
-        //ob_end_flush();
-        while (ob_get_level()) {
-            ob_end_flush();
-        }
-        
-        // Implicitly flush the buffer(s)
-        ini_set('implicit_flush', true);
-        ob_implicit_flush(true);
-        
-        //prevent apache from buffering it for deflate/gzip
         if (!headers_sent()) {
-            if ($this->currentRequestType == self::REQUEST_CLI) {
+            // Turn off output buffering
+            ini_set('output_buffering', 'off');
+            // Turn off PHP output compression
+            ini_set('zlib.output_compression', false);
+
+            if (self::REQUEST_CLI == this->currentRequestType) {
                 header("Content-type: text/plain");
             }
             // recommended to prevent caching of even
             header('Cache-Control: no-cache');
+
+            //Flush (send) the output buffer and turn off output buffering
+            //ob_end_flush();
+            while (ob_get_level()) {
+                ob_end_flush();
+            }
+
+            // Implicitly flush the buffer(s)
+            ini_set('implicit_flush', true);
+            ob_implicit_flush(true);
         }
     }
 }
