@@ -1,1 +1,5 @@
 /vendor/
+/.idea/codeception.xml
+/composer.lock
+/.idea/phpspec.xml
+/.idea/phpunit.xml
