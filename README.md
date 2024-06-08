@@ -23,8 +23,14 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function fromConfig(array $conf) : self;	
 	//set an argument to accept
 	public function setArgument($shortName, $longName=null, $doc='', array $options=[]) : self;
-	//get an arguments value from request
-	public function getArguments($which=null, $default=null) : mixed;
+	//(changed in 2.0) get a list of the argument set with setArgument
+	public function getArguments() : array;
+	//(added in 2.0) get a single argument set 
+	public function getArgument(string $which) : array;
+	//(added in 2.0) convert an arguments name to the short version ( safe for leading hypen and short names)
+	public function toShortName(string $long_name) : string|false;
+	//(added in 2.0) convert an arguments name to the long version ( safe for leading hypens and long names)
+	public function toLongName(string $short_name) : string|false;
 	//set the allowed request types (for overriding)
 	public function setAllowedRequestTypes($requestType) : self;	
 	//set the current request types (for overriding auto detection)
@@ -33,6 +39,8 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function getCurrentRequestType() : int;
 	//set a request (for overriding)
 	public function setRequest(array $request) : self;
+	//(added in 2.0) get the value of an argement from the request or null to get the request as an array
+	public function getRequest($which=null, $default=null) : array;
 	//get a list of the allowed options (see options)
 	public function getOptions() : array;
 	//get the argument help doc as text
@@ -42,33 +50,54 @@ This is the form of a typical command line call, here we are assuming only that 
 ```
 
 ### Cli Class Constants ###
- Name              |   Type    |   Value     | Description
- ----------------- | --------- | ----------- | ------------------------------------------------------
- R_ALL             |    int    |     7      | __Bitwise Flag__ Value subject to change (composite of all other flags)
- REQUEST_CLI       |    int    |     1      |  __Bitwise Flag__ Command line request 
- REQUEST_POST      |    int    |     2      |  __Bitwise Flag__ HTTP Post request
- REQUEST_GET       |    int    |     4      |  __Bitwise Flag__ HTTP Get request
+ Name                   |   Type    |   Since  | Description
+ ---------------------- | --------- | -------- | ------------------------------------------------------
+  VERSION               |  string   |   2.0.0  | the current version
+  OPT_VALUE_EXPECTED    |  string   |   2.0.0  | __Option:__ see Value Expected
+  OPT_MUST_VALIDATE     |  string   |   2.0.0  | __Option:__ see Must Validate
+  OPT_MULTIPLE_EXPECTED |  string   |   2.0.0  | __Option:__ see Multiple Expected
+  R_ALL                 |  int      |   1.0.0  | __Bitwise Flag__ Value subject to change (composite of all other flags)
+  REQUEST_CLI           |  int      |   1.0.0  | __Bitwise Flag__ Command line request 
+  REQUEST_POST          |  int      |   1.0.0  | __Bitwise Flag__ HTTP Post request
+  REQUEST_GET           |  int      |   1.0.0  | __Bitwise Flag__ HTTP Get request
  
 
-### Arguments ###
- Name              |   Type   |   Required  | Description
- ----------------- | -------- | ----------- | ------------------------------------------------------
- $conf             |  array   |      yes    | An array of arguments to set (see below)
- $shortName        |  string  |      yes    | An arguments short name max length of 1, a-z A-Z or 0-9
- $longName         |  string  |      no     | The long name for an argument or null, min length of 1, a-z A-Z or 0-9
- $which			   |  string  |      no     | Argument's shortName or longName, get an arguments value from request, null for get all
- $default		   |  mixed   |      no     | Default value to return when no value is set in the request
- $options          |  array   |      no     | An array of options for the argument (see below)
- $requestType      |  int     |      yes    | One of the Cli::REQUEST_ constants or Cli::R_ALL (bitwise)
- $request          |  array   |      yes    | The request (typically auto detected)
- $exit             |  boolean |      no     | to exit or not
+### General Argument Definitions ###
+ Name           |  Type    |   Since  | Description
+ -------------- | -------- | -------- | ------------------------------------------------------
+ $conf          |  array   |   1.0.0  | An array of arguments to set (see below)
+ $shortName     |  string  |   1.0.0  | An arguments short name max length of 1, a-z A-Z or 0-9
+ $longName      |  string  |   1.0.0  | The long name for an argument or null, min length of 1, a-z A-Z or 0-9
+ $which		 	|  string  |   1.0.0  | Argument's shortName or longName, get an arguments value from request, null for get all
+ $default		|  mixed   |   1.0.0  | Default value to return when no value is set in the request ( can be a closure since 2.0.0 )
+ $options       |  array   |   1.0.0  | An array of options for the argument (see below)
+ $requestType   |  int     |   1.0.0  | One of the Cli::REQUEST_ constants or Cli::R_ALL (bitwise)
+ $request       |  array   |   1.0.0  | The request (typically auto detected)
 
-### Options ###
- Name              |   Type    |   Required  | Description
- ----------------- | --------- | ----------- | ------------------------------------------------------
- 'accept'          |  Closure  |     no      | A callback function to run against the incoming request value
- 'requireValue'    |    bool   |     no      | If this argument is present in the request then a value is required for it
- 
+### Options (changed in 2.0.0) ###
+ Name                  |   Type    |   Since  | Description
+ --------------------- | --------- | -------- | ------------------------------------------------------
+OPT_VALUE_EXPECTED     |   bool    |   2.0.0  | A value is expexed for this argument
+OPT_MUST_VALIDATE      |   mixed   |   2.0.0  | If this argument is present then it's value must meet this condition
+OPT_MULTIPLE_EXPECTED  |   mixed   |   2.0.0  | Multiple argements are exected, this argment value will always be an array
+
+#### OPT_VALUE_EXPECTED ####
+When this option is true a value is expected for this argument:  
+- If _true_ and the argument is set without a value `prog.exe -a` then it is value "false", please note this is the opposite of below
+- If _true_ and the argument is set with a value `prog.exe -a=1` then it's value is set
+- If _false_ and the argument is set without a value `prog.exe -a` then it is value "true" 
+- If _false_ and the argument is set with a value `prog.exe -a=1` then it is still "true" but the value is not given
+
+#### OPT_MUST_VALIDATE ####
+This option can be either a boolean value or a Closure (or any class that impliments the Callable interface):
+- If it's set to _true_, the argement will always validate if it's in the request
+- If it's set to _false_, the argement will never validate if it's in the request
+- If it's set to a callback, then it's the callback's responsibillity to return true or false
+
+#### OPT_MULTIPLE_EXPECTED ####
+This option deturmines if an argument can have multiple values `prog.exe -a=1 -a=2 -a=3`
+- If it's set to _true_, the argements value will always be represented by an array
+- If it's set to _false_, the argements value never be represented by an array and only the last value is set
 
 ### Basic Usage ###
 Usage is pretty simple, there are 3 main methods you will need and few others that are just nice to have.
@@ -169,14 +198,18 @@ After all your arguments are defined you can access the values they hold in the 
 	//setup a basic argument  (called -h or --help)
 	$Cli->setArgument('h', 'help', 'Show this help document');
     // ... other arguments ...
-    //get all arguments (get all will return the shortName as the keys)
+    // get an array all arguments (shortName as the keys), changed in 2.0.0,
     $args = $Cli->getArguments();
-    //get a single argument (using the shortName)
-    $help = $Cli->getArguments('h');
-    //get a single argument (using the longName)
-    $help = $Cli->getArguments('help');
-    //get a single argument (using the shortName) with a custom default return value (returned if the argument was not set)
-    $foo = $Cli->getArguments('foo', 'Hello World');
+    //get a single argument (using the shortName), added in 2.0.0,
+    $help = $Cli->getArgument('h');
+    //get a single argument (using the longName), added in 2.0.0,
+    $help = $Cli->getArgument('help');
+    //get the request (this will contain only valid arguments)
+    $foo = $Cli->geRequest();
+	//get the request value of a single argement (default null)
+    $foo = $Cli->geRequest('h');
+	//get the request value of a single argement (default string foo)
+    $foo = $Cli->geRequest('h', 'foo');
 ```
 
 ### Other Methods ###
