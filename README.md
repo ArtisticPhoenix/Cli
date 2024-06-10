@@ -160,7 +160,7 @@ The fourth argument is an array of options, currently only 2 options are support
 			'longName' => 'foo',
 			'doc' => 'This is just foo, and must always be foo',
 			'options' => [
-				'accept' => function($shortName, $value){
+				$Cli::OPT_MUST_VALIDATE  => function($shortName, $value){
 					if($value == 'foo') return true;
 					return false;
 				}
@@ -169,7 +169,7 @@ The fourth argument is an array of options, currently only 2 options are support
 			'shortName' => 'i',
 			'longName' => 'input',
 			'doc' => 'This is input that requires a value',
-			'options' => [
+			$Cli::OPT_VALUE_EXPECTED ' => [
 				'requireValue' => true
 			]
 		]

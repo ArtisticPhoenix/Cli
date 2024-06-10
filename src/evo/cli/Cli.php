@@ -412,12 +412,8 @@ when false only the last value is used for the arguement',
 
         if(false === ($w = $this->toShortName($which))) throw new E\InvalidArgument('Unknown argument '.$which);
 
-        if(!isset($this->request[$w]) && $default){
-            if(is_callable($default) && is_object($default)){
-                return $default($which, $this->request);
-            }else{
-                return $default;
-            }
+        if(!isset($this->request[$w]) && is_object($default) && is_callable($default) ){
+            return $default($which, $this->request);
         }
 
         return $this->request[$w];
