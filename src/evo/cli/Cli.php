@@ -520,7 +520,8 @@ when false only the last value is used for the arguement',
             //multiple inputs
             if(is_array($value) && empty($options[self::OPT_MULTIPLE_EXPECTED])){
                 $value = end($value);
-            }else if(!is_array($value) && !empty($options[self::OPT_MULTIPLE_EXPECTED])){
+            }else if(null !== $value && false !== $value && !is_array($value) && !empty($options[self::OPT_MULTIPLE_EXPECTED])){
+                //when the value is null or false just return it instead of doing this [null],[false]
                 $value = [$value];
             }
 
