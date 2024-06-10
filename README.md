@@ -39,8 +39,10 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function getCurrentRequestType() : int;
 	//set a request (for overriding)
 	public function setRequest(array $request) : self;
-	//(added in 2.0) get the value of an argement from the request or null to get the request as an array
+	//(added in 2.0) get the value of an argument from the request or null to get the request as an array
 	public function getRequest($which=null, $default=null) : array;
+	//(added in 2.0) is an argument set in the request or null is the request itself set
+	public function issetRequest($which=null) : bool
 	//get a list of the allowed options (see options)
 	public function getOptions() : array;
 	//get the argument help doc as text

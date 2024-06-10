@@ -420,6 +420,28 @@ when false only the last value is used for the arguement',
     }
 
     /**
+     * @param string|null $which - which argument / null for the request in general
+     * @return bool
+     */
+    public function issetRequest($which=null) : bool
+    {
+        //no which && no request = sandwhich :-p
+        if (null===$which) {
+            if (!$this->request) {
+                return false;
+            }else{
+                return true;
+            }
+        }
+
+        if (!$this->request)  $this->setRequest($this->fetchRequest());
+
+        if(false === ($w = $this->toShortName($which))) throw new E\InvalidArgument('Unknown argument '.$which);
+
+        return isset($this->request[$w]);
+    }
+
+    /**
      * Get the help document as a string
      * Enter which argument to get only that arguments help doc - leave null for all
      *
