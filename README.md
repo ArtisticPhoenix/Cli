@@ -49,7 +49,8 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function getHelpDoc() : string;
 	//output the argement help doc
 	public function printHelpDoc($exit=true) : null;
-```
+``` 	
+
 
 ### Cli Class Constants ###
  Name                   |   Type    |   Since  | Description

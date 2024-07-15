@@ -27,7 +27,7 @@ final class Cli implements SingletonInterface
      * the current version
      * added v2.0.0
      */
-    const VERSION = '2.0.0';
+    const VERSION = '2.1.0';
 
     /**
      * Option Key for options that should have a value but that may not
@@ -439,6 +439,20 @@ when false only the last value is used for the arguement',
         if(false === ($w = $this->toShortName($which))) throw new E\InvalidArgument('Unknown argument '.$which);
 
         return isset($this->request[$w]);
+    }
+
+    /**
+     * Check if the request is empty or not
+     * -- this is useful for calling printHelpDoc on an empty request
+     * @param string|null $which - which argument / null for the request in general
+     *
+     * @return bool
+     */
+    public function isEmptyRequest($which=null) : bool
+    {
+        if (null===$which) return empty($this->request);
+
+        return empty($this->request[$which]);
     }
 
     /**
