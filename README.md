@@ -41,8 +41,10 @@ This is the form of a typical command line call, here we are assuming only that 
 	public function setRequest(array $request) : self;
 	//(added in 2.0) get the value of an argument from the request or null to get the request as an array
 	public function getRequest($which=null, $default=null) : array;
-	//(added in 2.0) is an argument set in the request or null is the request itself set
+	//(added in 2.0) is an argument set in the request or is the request itself set
 	public function issetRequest($which=null) : bool
+	//(added in 2.1) is an argument empty in the request or is the request itself empty
+	public function isEmptyRequest($which=null) : bool
 	//get a list of the allowed options (see options)
 	public function getOptions() : array;
 	//get the argument help doc as text
