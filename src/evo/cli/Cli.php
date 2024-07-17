@@ -39,13 +39,17 @@ final class Cli implements SingletonInterface
 
     /**
      * a callback function to validate the value from options that have OPT_HAS_VALUE => true
-     * data will be ran aganst this function  "OPT_MUST_VALIDATE => fn($which,$request) strlen($which)"
+     * data will be run against this function  "OPT_MUST_VALIDATE => fn($which,$request) strlen($which)"
      * added v2.0.0
      */
     const OPT_MUST_VALIDATE              = 'MUST_VALIDATE';
 
     /**
-     * this will always be retuned as an indexed array
+     * this will nat always be returned as an array
+     * in some cases it will be null or boolean false.
+     * null = indicates it's not set
+     * boolean false = indicates its set as a single -m
+     * array = -m=x
      * added v2.0.0
      */
     const OPT_MULTIPLE_EXPECTED          = 'MULTIPLE_EXPECTED';
