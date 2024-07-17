@@ -188,8 +188,8 @@ when false a value is not expected for this argument ( default=true if paresent 
 
         $this->options[self::OPT_MULTIPLE_EXPECTED] = [
             'doc'       => 'Option must be a boolean value,
-when true a the attribue will always be an array
-when false only the last value is used for the arguement',
+when true the attribute will always be an array
+when false only the last value is used for the attribute',
             'accept'    => function ($value) {
                 //validation for this option
                 return is_bool($value);
@@ -391,6 +391,11 @@ when false only the last value is used for the arguement',
     public function getArgument(string $which) : array
     {
         if(false === ($w = $this->toShortName($which))) throw new E\InvalidArgument('Unknown argument '.$which);
+
+        //@maybe: multiple input values adjustments (-d ~ false, -d=1 ~ [1], -d=1 -d ~ [1,false]
+        //$array = $array  ? array_filter($array, fn($i)=>!is_bool($i)) : [];
+        //or document for type clarity
+
         return $this->arguments[$w];
     }
 
