@@ -48,8 +48,11 @@ final class Cli implements SingletonInterface
      * this will nat always be returned as an array
      * in some cases it will be null or boolean false.
      * null = indicates it's not set
-     * boolean false = indicates its set as a single -m
-     * array = -m=x
+     * boolean false = indicates its set as a single -m (falsy)
+     * "" empty string = indicates its set as a single -m= (falsy)
+     * array = the above values can also be included in the array -m=x, truthy
+     * ['1', '', false] ~ -m=1 -m= -m
+     * it is the developers[your] responsibility to handle these cases.
      * added v2.0.0
      */
     const OPT_MULTIPLE_EXPECTED          = 'MULTIPLE_EXPECTED';
