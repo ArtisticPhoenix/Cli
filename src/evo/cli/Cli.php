@@ -30,9 +30,16 @@ final class Cli implements SingletonInterface
     const VERSION = '2.1.0';
 
     /**
-     * Option Key for options that should have a value but that may not
-     * this must be set in order to retrive the value from the request
-     * $options = [class::OPT_HAS_VALUE => true]
+     * Option Key for options that should have a value but that may not eg. -x=something
+     * this MUST be true in order to retrieve the value 'something' from the request
+     *     when set as (-x) request value is boolean false
+     *     when set as (-x=) request value is an empty string
+     *     when set as (-x=foo) request value is 'foo'
+     * otherwise, when this is false
+     *     when set as (-x,-x=, -x=foo) request value will always equal boolean true
+     * when not set the default request value will always be null
+     *
+     *  $options = [class::OPT_HAS_VALUE => true]
      *  constant - since v2.0.0
      */
     const OPT_VALUE_EXPECTED                = 'VALUE_EXPECTED';
