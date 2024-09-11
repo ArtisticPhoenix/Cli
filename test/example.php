@@ -4,7 +4,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 $Cli = \evo\cli\Cli::I();
 
 /**
- *  php C:/UniserverZ/www/Cli/test/example.php -h
+ *  php C:/UniserverZ/www/evo/Cli/test/example.php -h
  */
 //Register command line arguments [$Cli::OPT_VALUE_EXPECTED=>true]
 $Cli->setArgument('h', 'help', 'Show this help document');
@@ -26,3 +26,6 @@ $Cli->setArgument('g', 'gamma', 'a generic option', [
 if($Cli->getRequest('h')){
     $Cli->printHelpDoc();
 }
+
+
+$Cli->setCurrentRequestType(23);

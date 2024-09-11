@@ -10,9 +10,9 @@
 		}
 	},
 	"require" : {
-		"php" : ">=7",
-		"evo/patterns" : "~1.0",
-		"evo/exception" : "~1.0"
+		"php" : ">=8.3",
+		"evo/patterns" : "@stable",
+		"evo/exception" : "@stable"
 	},
 	"keywords" : [
 		"CLI"

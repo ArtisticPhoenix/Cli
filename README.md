@@ -18,39 +18,44 @@ This is the form of a typical command line call, here we are assuming only that 
 ### Class refrence ###
 ```php
 	//get an instance of Cli, this is a singleton class
-	public static function getInstance() : self;
+	public static function getInstance(): self;
 	//set arguments with a config array
-	public function fromConfig(array $conf) : self;	
+	public function fromConfig(array $conf): self;	
 	//set an argument to accept
-	public function setArgument($shortName, $longName=null, $doc='', array $options=[]) : self;
+	public function setArgument(string $shortName, ?string $longName=null, string $doc='', array $options=[]): self;
 	//(changed in 2.0) get a list of the argument set with setArgument
 	public function getArguments() : array;
 	//(added in 2.0) get a single argument set 
-	public function getArgument(string $which) : array;
+	public function getArgument(string $which): array;
 	//(added in 2.0) convert an arguments name to the short version ( safe for leading hypen and short names)
-	public function toShortName(string $long_name) : string|false;
+	public function toShortName(string $long_name): string|false;
 	//(added in 2.0) convert an arguments name to the long version ( safe for leading hypens and long names)
-	public function toLongName(string $short_name) : string|false;
+	public function toLongName(string $short_name): string|false;
 	//set the allowed request types (for overriding)
-	public function setAllowedRequestTypes($requestType) : self;	
+	public function setAllowedRequestTypes(int $requestType): self;	
 	//set the current request types (for overriding auto detection)
-	public function setCurrentRequestType($requestType) : self;	
+	public function setCurrentRequestType(int $requestType): self;	
 	//get the current request type (as of version 1.0.2)
-	public function getCurrentRequestType() : int;
+	public function getCurrentRequestType(): int;
 	//set a request (for overriding)
-	public function setRequest(array $request) : self;
+	public function setRequest(array $request): self;
 	//(added in 2.0) get the value of an argument from the request or null to get the request as an array
-	public function getRequest($which=null, $default=null) : array;
+	public function getRequest(?string $which=null, mixed $default=null): mixed;
+	//(added in 2.2) Use this callback method as the default to throw an evo\OutOfBoundsException for an unknown request key
+	public static function throwUnknownRequestKey(): callable
 	//(added in 2.0) is an argument set in the request or is the request itself set
-	public function issetRequest($which=null) : bool
+	public function issetRequest(?string $which=null): bool
 	//(added in 2.1) is an argument empty in the request or is the request itself empty
-	public function isEmptyRequest($which=null) : bool
+	public function isEmptyRequest(?string $which=null): bool
 	//get a list of the allowed options (see options)
-	public function getOptions() : array;
+	public function getOptions(): array;
 	//get the argument help doc as text
-	public function getHelpDoc() : string;
+	public function getHelpDoc(): string;
 	//output the argement help doc
-	public function printHelpDoc($exit=true) : null;
+	public function printHelpDoc(bool $exit=true): void;
+	//(added in 2.2) Stream output instead of buffering it over HTTP
+	public static function streamOutput(): void
+
 ``` 	
 
 
@@ -61,10 +66,12 @@ This is the form of a typical command line call, here we are assuming only that 
   OPT_VALUE_EXPECTED    |  string   |   2.0.0  | __Option:__ see Value Expected
   OPT_MUST_VALIDATE     |  string   |   2.0.0  | __Option:__ see Must Validate
   OPT_MULTIPLE_EXPECTED |  string   |   2.0.0  | __Option:__ see Multiple Expected
-  R_ALL                 |  int      |   1.0.0  | __Bitwise Flag__ Value subject to change (composite of all other flags)
+  R_ALL                 |  int      |   1.0.0  | __Bitwise Flag__ (composite of all bitwise other flags)
   REQUEST_CLI           |  int      |   1.0.0  | __Bitwise Flag__ Command line request 
   REQUEST_POST          |  int      |   1.0.0  | __Bitwise Flag__ HTTP Post request
   REQUEST_GET           |  int      |   1.0.0  | __Bitwise Flag__ HTTP Get request
+  REQUEST_PUT           |  int      |   1.0.0  | __Bitwise Flag__ HTTP Put/Post request
+  REQUEST_DELETE        |  int      |   1.0.0  | __Bitwise Flag__ HTTP Delete/Post request
  
 
 ### General Argument Definitions ###
@@ -82,9 +89,9 @@ This is the form of a typical command line call, here we are assuming only that 
 ### Options (changed in 2.0.0) ###
  Name                  |   Type    |   Since  | Description
  --------------------- | --------- | -------- | ------------------------------------------------------
-OPT_VALUE_EXPECTED     |   bool    |   2.0.0  | A value is expexed for this argument
+OPT_VALUE_EXPECTED     |   bool    |   2.0.0  | A value is expexed for this argument, if this is -a (false) otherwise -a (true)
 OPT_MUST_VALIDATE      |   mixed   |   2.0.0  | If this argument is present then it's value must meet this condition
-OPT_MULTIPLE_EXPECTED  |   mixed   |   2.0.0  | Multiple argements are exected, this argment value will always be an array
+OPT_MULTIPLE_EXPECTED  |   mixed   |   2.0.0  | Multiple argements are exected, this argment value will always be an array when returned
 
 #### OPT_VALUE_EXPECTED ####
 When this option is true a value is expected for this argument:  
@@ -284,16 +291,6 @@ It has 2 dependancies (which are included in the `composer.json` file.
 		"evo/exception" : "dev-master"
 	}
 	
-**Changelog**
-
-1.0.0 - initial commits
-
-1.0.1 - minor bug fix - for required args (were not acutally requiring)
-
-1.0.2 - added method `getCurrentRequestType()`
-  - minor bug fix - When passing a config array to fromConfig() that does not have any options an empty string was sent to the 4th argument (options) of `setArgument($shortName, $longName=null, $doc='', array $options=[])`
-  - minor bug fix - not properly regestering some config settings
-
     
 And that is pretty much it, Enjoy!
 
