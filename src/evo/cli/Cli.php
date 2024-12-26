@@ -409,7 +409,7 @@ when false only the last value is used for the attribute',
 
         if (empty($which)) return $this->request; //return all
 
-        if (false === ($w = $this->toShortName($which))) throw new E\OutOfBoundsException('Unknown argument ' . $which);
+        if (false === ($w = $this->toLongName($which))) throw new E\OutOfBoundsException('Unknown argument ' . $which);
 
         if (!isset($this->request[$w]) && is_object($default) && is_callable($default)) {
             return $default($which, $this->request);
@@ -447,7 +447,7 @@ when false only the last value is used for the attribute',
 
         if (!$this->request) $this->setRequest($this->fetchRequest());
 
-        if (false === ($w = $this->toShortName($which)))
+        if (false === ($w = $this->toLongName($which)))
             throw new E\OutOfBoundsException('Unknown argument ' . $which);
 
         return isset($this->request[$w]);
@@ -537,8 +537,8 @@ when false only the last value is used for the attribute',
             $options = $settings['options'] ?? [];
 
             if (empty($settings['options'][self::OPT_VALUE_EXPECTED])) {
-                //if this is false presence will indicte a true value/// -a (=true) or -a=100 (=true)
-                //if this is true presence will indicte false for no value or the value /// -a (=false) or -a=100 (=100)
+                //if this is false presence will indicate a true value/// -a (=true) or -a=100 (=true)
+                //if this is true presence will indicate false for no value or the value /// -a (=false) or -a=100 (=100)
                 $value = is_array($value) ? array_fill(0, count($value), true) : true;
                 //if it's not here we're not having this conversation
             }
@@ -558,8 +558,8 @@ when false only the last value is used for the attribute',
                     throw new E\ValueError("An invalid value was given for  argument '{$longName}'. " . $settings['doc']);
                 }
             }
-
-            $validArgs[$shortName] = $value;
+//@todo: use long names
+            $validArgs[$longName] = $value;
         }
 
         return $validArgs;
