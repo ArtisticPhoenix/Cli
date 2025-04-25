@@ -331,6 +331,11 @@ when false only the last value is used for the attribute',
         ];
 
         if (!empty($options)) {
+            //Arguments with OPT_MULTIPLE_EXPECTED set, Must also have OPT_VALUE_EXPECTED set to work correctly
+            if(!empty($options[self::OPT_MULTIPLE_EXPECTED]) && empty($options[self::OPT_VALUE_EXPECTED])){
+                $options[self::OPT_VALUE_EXPECTED] = true;
+            }
+
             foreach ($options as $key => $value) {
                 //validate each option & value
                 $this->ckOption($key, $value);
