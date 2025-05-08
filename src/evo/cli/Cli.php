@@ -437,8 +437,6 @@ when false only the last value is used for the attribute',
     /**
      * @param string|null $which - which argument / null for the request in general
      * @return bool
-     *
-     * @throws E\OutOfBoundsException
      */
     public function issetRequest(?string $which = null): bool
     {
@@ -452,8 +450,7 @@ when false only the last value is used for the attribute',
 
         if (!$this->request) $this->setRequest($this->fetchRequest());
 
-        if (false === ($w = $this->toLongName($which)))
-            throw new E\OutOfBoundsException('Unknown argument ' . $which);
+        if (false === ($w = $this->toLongName($which))) return false;
 
         return isset($this->request[$w]);
     }
